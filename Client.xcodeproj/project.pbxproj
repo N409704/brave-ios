@@ -6364,7 +6364,7 @@
 				"$(SRCROOT)/BraveRewards/BraveRewards.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Lottie.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ObjcExceptionBridging.framework",
-				"$(SRCROOT)/BraveRewards/BraveRewards.framework/Frameworks/MaterialComponents.framework",
+				"$(SRCROOT)/BraveRewards/MaterialComponents.framework",
 			);
 			name = "Copy Carthage Dependencies";
 			outputPaths = (
@@ -8797,7 +8797,6 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
-					"@executable_path/Frameworks/BraveRewards.framework/Frameworks",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -9623,7 +9622,6 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
-					"@executable_path/Frameworks/BraveRewards.framework/Frameworks",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -11907,7 +11905,6 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
-					"@executable_path/Frameworks/BraveRewards.framework/Frameworks",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -12137,7 +12134,6 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
-					"@executable_path/Frameworks/BraveRewards.framework/Frameworks",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -12433,7 +12429,6 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
-					"@executable_path/Frameworks/BraveRewards.framework/Frameworks",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -12681,7 +12676,6 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
-					"@executable_path/Frameworks/BraveRewards.framework/Frameworks",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
