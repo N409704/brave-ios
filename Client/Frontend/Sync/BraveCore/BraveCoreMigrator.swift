@@ -19,12 +19,39 @@ class BraveCoreMigrator {
             self.observer = nil
 
             if !BraveCoreMigrator.chromiumBookmarksMigration_v1 {
-                print("STARITNG MIGRATION")
                 if self.migrateBookmarks() {
                     BraveCoreMigrator.chromiumBookmarksMigration_v1 = true
                 }
             }
         }))
+        
+//        DataController.perform { context in
+//            Bookmark.getAllTopLevelBookmarks(context).forEach({
+//                $0.delete(context: .existing(context))
+//            })
+//
+//            //TOP LEVEL
+//            Bookmark.add(url: URL(string: "https://amazon.ca/")!, title: "Amazon", context: .existing(context))
+//            Bookmark.add(url: URL(string: "https://google.ca/")!, title: "Google", context: .existing(context))
+//
+//            //TEST FOLDER
+//            Bookmark.addFolder(title: "TEST", context: .existing(context))
+//
+//            //TEST -> Brave
+//            let test = Bookmark.getTopLevelFolders(context).first(where: { $0.customTitle == "TEST" })
+//            Bookmark.add(url: URL(string: "https://brave.com/")!, title: "Brave", parentFolder: test, context: .existing(context))
+//
+//            //TEST -> DEPTH Folder
+//            Bookmark.addFolder(title: "DEPTH", parentFolder: test, context: .existing(context))
+//
+//            //TEST -> DEPTH -> REDDIT
+//            let depth = Bookmark.getAllBookmarks(context: context).first(where: { $0.isFolder && $0.parentFolder?.customTitle == "TEST" && $0.customTitle == "DEPTH" })
+//            Bookmark.add(url: URL(string: "https://reddit.com/")!, title: "Reddit", parentFolder: depth, context: .existing(context))
+//
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+//                self.exportBookmarks()
+//            }
+//        }
     }
     
     public static var chromiumBookmarksMigration_v1: Bool {
@@ -50,10 +77,10 @@ class BraveCoreMigrator {
     private func migrateBookmarks() -> Bool {
         //let chromiumFavourites = Bookmark.allBookmarks.map({ convertToChromiumFormat($0) })
  
-        let chromiumBookmarks = Bookmark.allBookmarks//.map({ convertToChromiumFormat($0) })
+        let coreDataBookmarks = Bookmark.getAllTopLevelBookmarks() //.map({ convertToChromiumFormat($0) })
         
         let rootFolder = bookmarksAPI.mobileNode
-        for bookmark in chromiumBookmarks {
+        for bookmark in coreDataBookmarks {
             if !migrateChromiumBookmarks(bookmark, chromiumBookmark: rootFolder!) {
                 print("Migration Failed somehow..")
                 bookmarksAPI.removeAll() //Roll-back everything.. we screwed up..
@@ -235,6 +262,14 @@ class Bookmarkv2 {
             return coreDataBookmark.children?.compactMap({ Bookmarkv2($0) })
         }
         return bookmarkNode?.children.map({ Bookmarkv2($0) })
+    }
+    
+    public var canBeDelete: Bool {
+        if self.coreDataBookmark != nil {
+            return true
+        }
+        
+        return bookmarkNode?.isPermanentNode ?? true
     }
 }
 
