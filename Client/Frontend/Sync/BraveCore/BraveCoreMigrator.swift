@@ -269,7 +269,7 @@ class Bookmarkv2 {
             return true
         }
         
-        return bookmarkNode?.isPermanentNode == true
+        return bookmarkNode?.isPermanentNode == false
     }
 }
 
