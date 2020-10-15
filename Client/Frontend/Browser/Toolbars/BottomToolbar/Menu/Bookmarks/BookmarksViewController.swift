@@ -53,15 +53,6 @@ class BookmarksViewController: SiteTableViewController, ToolbarUrlActionsProtoco
         case bookmarks(inFolder: Bookmarkv2?)
         case favorites
     }
-    
-    private var isAtBookmarkRootLevel: Bool {
-        switch mode {
-        case .bookmarks(let folder):
-            return folder == nil
-        case .favorites:
-            return false
-        }
-    }
   
     init(mode: Mode, isPrivateBrowsing: Bool) {
         self.isPrivateBrowsing = isPrivateBrowsing
@@ -105,14 +96,42 @@ class BookmarksViewController: SiteTableViewController, ToolbarUrlActionsProtoco
         }
     }
     
+    private var leftToolbarItems: [UIBarButtonItem?] {
+        switch mode {
+        case .bookmarks(let folder):
+            var items: [UIBarButtonItem?] = [.fixedSpace(5)]
+            if folder == nil {
+                items.append(importExportButton)
+                
+                // Unlike Chromium, old CoreData implementation did not have permanent folders
+                if !BraveCoreMigrator.chromiumBookmarksMigration_v1 {
+                    items.append(.fixedSpace(16))
+                    items.append(addFolderButton)
+                }
+            } else {
+                items.append(addFolderButton)
+            }
+            
+            return items
+        case .favorites:
+            return [addFolderButton]
+        }
+    }
+    
     private func setUpToolbar() {
-        var padding: UIBarButtonItem { return UIBarButtonItem.fixedSpace(5) }
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
         
-        let leftItem = isAtBookmarkRootLevel ? importExportButton : addFolderButton
-        let rightItem = isAtBookmarkRootLevel ? nil : editBookmarksButton
+        let rightItem = { () -> UIBarButtonItem? in
+            switch mode {
+            case .bookmarks(let folder):
+                return (BraveCoreMigrator.chromiumBookmarksMigration_v1 && folder == nil)
+                    ? nil : editBookmarksButton
+            case .favorites:
+                return nil
+            }
+        }()
         
-        let items = [padding, leftItem, flexibleSpace, rightItem, padding].compactMap { $0 }
+        let items = (leftToolbarItems + [flexibleSpace, rightItem, .fixedSpace(5)]).compactMap { $0 }
         setToolbarItems(items, animated: true)
     }
   
@@ -406,6 +425,10 @@ class BookmarksViewController: SiteTableViewController, ToolbarUrlActionsProtoco
   func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
     guard let item = bookmarksFRC?.object(at: indexPath) else { return nil }
     
+    if !item.canBeDeleted {
+        return []
+    }
+    
     let deleteAction = UITableViewRowAction(style: UITableViewRowAction.Style.destructive, title: Strings.delete,
                                             handler: { action, indexPath in
       
@@ -445,10 +468,6 @@ class BookmarksViewController: SiteTableViewController, ToolbarUrlActionsProtoco
             let vc = AddEditBookmarkTableViewController(mode: mode)
             self.navigationController?.pushViewController(vc, animated: true)
         }
-    }
-    
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        !isAtBookmarkRootLevel
     }
 }
 

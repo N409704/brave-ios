@@ -264,12 +264,12 @@ class Bookmarkv2 {
         return bookmarkNode?.children.map({ Bookmarkv2($0) })
     }
     
-    public var canBeDelete: Bool {
-        if self.coreDataBookmark != nil {
+    public var canBeDeleted: Bool {
+        if coreDataBookmark != nil {
             return true
         }
         
-        return bookmarkNode?.isPermanentNode ?? true
+        return bookmarkNode?.isPermanentNode == true
     }
 }
 
